@@ -7,6 +7,7 @@ from datetime import timedelta, datetime
 from dateutil import parser
 from tqdm import tqdm #(Optional, used for progress-bars)
 import matplotlib.pyplot as plt
+from binance.exceptions import BinanceAPIException
 
 
 binance_api_key = 'API_KEY'    #Enter your own API-key here
