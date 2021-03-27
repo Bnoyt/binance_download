@@ -153,6 +153,37 @@ def get_available_future_coin_symbols():
     return info['symbols']
 
 
+def get_rolling_future_coin_data(start,end,symbol,freq='1h'):
+    """
+    get rolling coin futures price data (historical + forward)
+    """
+    
+    years = ['20','21','22']
+    
+    months = ['03','06','09','12']
+    
+    days = ['22','23','24','25','26','27','28']
+    
+    
+    delivery_dates = [f"{y}{m}{d}" for y,m,d in product(years,months,days)]
+    
+    dfs = []
+    
+    
+    for d in delivery_dates:
+        tmp_symbol = f"{symbol}_{d}"
+        try:
+            tmp = get_data_coin_future_mark(start,end,tmp_symbol,freq)
+            tmp['fullsym'] = tmp_symbol
+            tmp['delivery_date'] = pd.Timestamp(f"20{d}")
+            print(f"Getting data for symbol {tmp_symbol}")
+            dfs.append(tmp.copy())
+        except BinanceAPIException:
+            print(f"Dropping data fetching for symbol {tmp_symbol}")
+            
+    return pd.concat(dfs)
+
+
 
 
     
@@ -163,5 +194,6 @@ rates = get_data_funding_rate(pd.Timestamp('2020-01-01',tz='UTC'),pd.Timestamp.u
 index = get_data_coin_future_index(pd.Timestamp('2020-01-01',tz='UTC'),pd.Timestamp.utcnow(),'BTCUSD')
 marks = get_data_coin_future_mark(pd.Timestamp('2020-01-01',tz='UTC'),pd.Timestamp.utcnow(),'BTCUSD_PERP')
 spot = get_data_coin(pd.Timestamp('2020-01-01',tz='UTC'),pd.Timestamp.utcnow(),'BTCUSDT')
+rolling_fut = get_rolling_future_coin_data(pd.Timestamp('2020-01-01',tz='UTC'),pd.Timestamp.utcnow(),'BTCUSD')
 
 
